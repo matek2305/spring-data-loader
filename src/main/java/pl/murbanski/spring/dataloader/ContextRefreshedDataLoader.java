@@ -8,6 +8,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import pl.murbanski.spring.dataloader.annotations.LoadDataAfter;
+import pl.murbanski.spring.dataloader.exception.DataDependencyCycleFoundException;
 import pl.murbanski.spring.dataloader.scanner.DataLoaderScanner;
 
 import java.util.HashMap;
@@ -27,8 +28,9 @@ public class ContextRefreshedDataLoader implements ApplicationListener<ContextRe
     private final AutowireCapableBeanFactory autowireCapableBeanFactory;
     private final DataLoaderScanner dataLoaderScanner;
 
+    private final Set<Class<? extends DataLoader>> loaded = new HashSet<>();
+
     private Map<Class<? extends DataLoader>, DataLoader> dataLoaderMap = new HashMap<>();
-    private Set<Class<? extends DataLoader>> loaded = new HashSet<>();
 
     @Autowired
     public ContextRefreshedDataLoader(
@@ -54,21 +56,32 @@ public class ContextRefreshedDataLoader implements ApplicationListener<ContextRe
         log.info("Test data loaded successfully");
     }
 
-    private void loadData(DataLoader dataLoader) {
+    private void loadData(DataLoader loader) {
+        loadData(loader, new HashSet<>());
+    }
+
+    private void loadData(DataLoader dataLoader, Set<Class<? extends DataLoader>> dependencyChain) {
         Class<? extends DataLoader> dataLoaderClass = dataLoader.getClass();
         if (loaded.contains(dataLoaderClass)) {
             return;
         }
 
         if (dataLoaderClass.isAnnotationPresent(LoadDataAfter.class)) {
+            dependencyChain.add(dataLoaderClass);
+
             Class<? extends DataLoader>[] dependencies = dataLoaderClass.getAnnotation(LoadDataAfter.class).value();
             for (Class<? extends DataLoader> clazz : dependencies) {
                 if (loaded.contains(clazz)) {
                     continue;
                 }
 
+                if (dependencyChain.contains(clazz)) {
+                    throw new DataDependencyCycleFoundException("Data dependency cycle found! Check your data loader classes.");
+                }
+
+                dependencyChain.add(clazz);
                 checkNotNull(dataLoaderMap.get(clazz), "%s instance not found", clazz.getSimpleName());
-                loadData(dataLoaderMap.get(clazz));
+                loadData(dataLoaderMap.get(clazz), dependencyChain);
             }
         }
 
