@@ -51,9 +51,9 @@ public class ContextRefreshedDataLoader implements ApplicationListener<ContextRe
         dataLoaderMap = dataLoaderScanner.getInstanceMap();
         log.info("Found {} loaders", dataLoaderMap.size());
 
-        log.info("Starting test data load ...");
+        log.info("Starting data load ...");
         dataLoaderMap.forEach((clazz, loader) -> loadData(loader));
-        log.info("Test data loaded successfully");
+        log.info("Data loaded successfully");
     }
 
     private void loadData(DataLoader loader) {
