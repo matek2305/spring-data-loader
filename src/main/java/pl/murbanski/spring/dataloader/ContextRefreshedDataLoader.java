@@ -10,8 +10,10 @@ import org.springframework.util.StringUtils;
 import pl.murbanski.spring.dataloader.annotations.LoadDataAfter;
 import pl.murbanski.spring.dataloader.scanner.DataLoaderScanner;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

@@ -1,13 +1,13 @@
-package pl.murbanski.spring.dataloader.scanner;
+package pl.murbanski.spring.dataloader.scanner.testdata.pass;
 
 import pl.murbanski.spring.dataloader.DataLoader;
 
 /**
  * @author Mateusz Urbański <matek2305@gmail.com>
  */
-class TestDataLoader implements DataLoader {
+public class TestDataLoader implements DataLoader {
 
+    @Override
     public void load() {
-        // do nothing
     }
 }

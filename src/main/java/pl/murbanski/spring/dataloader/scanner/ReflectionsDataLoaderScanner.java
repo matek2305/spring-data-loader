@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.stereotype.Component;
 import pl.murbanski.spring.dataloader.DataLoader;
+import pl.murbanski.spring.dataloader.exception.DefaultConstructorNotFoundException;
 
 import java.util.Map;
 import java.util.Set;
@@ -28,6 +29,7 @@ class ReflectionsDataLoaderScanner implements DataLoaderScanner {
         this.autowireCapableBeanFactoryMock = autowireCapableBeanFactoryMock;
     }
 
+    @Override
     public String getPackage() {
         return dataLoaderPackage;
     }
@@ -44,7 +46,7 @@ class ReflectionsDataLoaderScanner implements DataLoaderScanner {
             autowireCapableBeanFactoryMock.autowireBean(dataLoader);
             return dataLoader;
         } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new DefaultConstructorNotFoundException("Default constructor for '" + dataLoaderClass.getName() + "' not found", e);
         }
     }
 }
