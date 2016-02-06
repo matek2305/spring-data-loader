@@ -1,4 +1,6 @@
-package pl.murbanski.spring.dataloader;
+package pl.murbanski.spring.dataloader.scanner;
+
+import pl.murbanski.spring.dataloader.DataLoader;
 
 import java.util.Set;
 

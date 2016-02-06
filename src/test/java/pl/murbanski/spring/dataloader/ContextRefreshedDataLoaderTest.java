@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import pl.murbanski.spring.dataloader.annotations.LoadDataAfter;
+import pl.murbanski.spring.dataloader.scanner.DataLoaderScanner;
 
 import java.util.Set;
 

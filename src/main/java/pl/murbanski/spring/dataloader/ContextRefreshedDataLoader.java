@@ -1,14 +1,13 @@
 package pl.murbanski.spring.dataloader;
 
 import lombok.extern.slf4j.Slf4j;
-import org.reflections.Reflections;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import pl.murbanski.spring.dataloader.scanner.DataLoaderScanner;
 
 import java.util.Set;
 
@@ -37,7 +36,7 @@ public class ContextRefreshedDataLoader implements ApplicationListener<ContextRe
             return;
         }
 
-        log.info("Scanning package {} for data loaders ...", dataLoaderPackage);
+        log.info("Scanning package '{}' for data loaders ...", dataLoaderPackage);
         final Set<Class<? extends DataLoader>> foundDataLoaders = dataLoaderScanner.scan();
         log.info("Found {} loaders", foundDataLoaders.size());
 
