@@ -7,6 +7,7 @@
     <groupId>com.github.matek2305</groupId>
     <artifactId>spring-data-loader</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -16,7 +17,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>4.2.1.RELEASE</version>
+            <version>4.2.4.RELEASE</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -28,12 +29,12 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.12</version>
+            <version>1.7.14</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>18.0</version>
+            <version>19.0</version>
         </dependency>
         <dependency>
             <groupId>org.reflections</groupId>
@@ -87,7 +88,7 @@
             <plugin>
                 <groupId>org.eluder.coveralls</groupId>
                 <artifactId>coveralls-maven-plugin</artifactId>
-                <version>4.0.0</version>
+                <version>4.1.0</version>
                 <configuration>
                     <repoToken>${env.coveralls_repo_token}</repoToken>
                 </configuration>
