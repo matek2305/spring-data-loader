@@ -37,11 +37,13 @@ public class ReflectionsDataLoaderScannerTest implements WithBDDMockito, WithAss
         assertThat(dataLoaderMap.get(TestDataLoader.class)).isNotNull().isExactlyInstanceOf(TestDataLoader.class);
     }
 
-    @Test(expected = DefaultConstructorNotFoundException.class)
+    @Test
     public void shouldThrowExceptionWhenDataLoaderHasNoDefConstructor() {
         // given
         final DataLoaderScanner dataLoaderScanner = new ReflectionsDataLoaderScanner(TestDataLoaderWithoutDefaultConstructor.class.getPackage().getName(), autowireCapableBeanFactoryMock);
-        // when
-        dataLoaderScanner.getInstanceMap();
+        // expect
+        assertThatThrownBy(dataLoaderScanner::getInstanceMap)
+                .isExactlyInstanceOf(DefaultConstructorNotFoundException.class)
+                .hasMessageContaining(TestDataLoaderWithoutDefaultConstructor.class.getName());
     }
 }
