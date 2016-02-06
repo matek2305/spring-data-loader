@@ -1,6 +1,6 @@
-package com.github.matek2305.spring.dataloader.annotations;
+package com.github.matek2305.dataloader.annotations;
 
-import com.github.matek2305.spring.dataloader.config.DataLoaderConfiguration;
+import com.github.matek2305.dataloader.config.DataLoaderConfiguration;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;

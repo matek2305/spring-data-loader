@@ -1,6 +1,6 @@
-package com.github.matek2305.spring.dataloader.annotations;
+package com.github.matek2305.dataloader.annotations;
 
-import com.github.matek2305.spring.dataloader.DataLoader;
+import com.github.matek2305.dataloader.DataLoader;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,6 +1,6 @@
-package com.github.matek2305.spring.dataloader.scanner;
+package com.github.matek2305.dataloader.scanner;
 
-import com.github.matek2305.spring.dataloader.DataLoader;
+import com.github.matek2305.dataloader.DataLoader;
 
 import java.util.Map;
 

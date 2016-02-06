@@ -1,6 +1,6 @@
-package com.github.matek2305.spring.dataloader.config;
+package com.github.matek2305.dataloader.config;
 
-import com.github.matek2305.spring.dataloader.ContextRefreshedDataLoader;
+import com.github.matek2305.dataloader.ContextRefreshedDataLoader;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 

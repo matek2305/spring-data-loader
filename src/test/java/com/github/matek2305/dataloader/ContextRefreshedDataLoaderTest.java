@@ -1,7 +1,7 @@
-package com.github.matek2305.spring.dataloader;
+package com.github.matek2305.dataloader;
 
-import com.github.matek2305.spring.dataloader.annotations.LoadDataAfter;
-import com.github.matek2305.spring.dataloader.scanner.DataLoaderScanner;
+import com.github.matek2305.dataloader.annotations.LoadDataAfter;
+import com.github.matek2305.dataloader.scanner.DataLoaderScanner;
 import com.google.common.collect.ImmutableMap;
 import info.solidsoft.mockito.java8.api.WithBDDMockito;
 import org.assertj.core.api.WithAssertions;
@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.event.ContextRefreshedEvent;
-import com.github.matek2305.spring.dataloader.exception.DataDependencyCycleFoundException;
+import com.github.matek2305.dataloader.exception.DataDependencyCycleFoundException;
 
 /**
  * @author Mateusz Urbański <matek2305@gmail.com>

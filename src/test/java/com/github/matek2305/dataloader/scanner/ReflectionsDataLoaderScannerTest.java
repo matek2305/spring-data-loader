@@ -1,14 +1,14 @@
-package com.github.matek2305.spring.dataloader.scanner;
+package com.github.matek2305.dataloader.scanner;
 
-import com.github.matek2305.spring.dataloader.exception.DefaultConstructorNotFoundException;
+import com.github.matek2305.dataloader.DataLoader;
+import com.github.matek2305.dataloader.scanner.testdata.fail.TestDataLoaderWithoutDefaultConstructor;
+import com.github.matek2305.dataloader.exception.DefaultConstructorNotFoundException;
 import info.solidsoft.mockito.java8.api.WithBDDMockito;
 import org.assertj.core.api.WithAssertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import com.github.matek2305.spring.dataloader.DataLoader;
-import com.github.matek2305.spring.dataloader.scanner.testdata.fail.TestDataLoaderWithoutDefaultConstructor;
-import com.github.matek2305.spring.dataloader.scanner.testdata.pass.TestDataLoader;
+import com.github.matek2305.dataloader.scanner.testdata.pass.TestDataLoader;
 
 import java.util.Map;
 

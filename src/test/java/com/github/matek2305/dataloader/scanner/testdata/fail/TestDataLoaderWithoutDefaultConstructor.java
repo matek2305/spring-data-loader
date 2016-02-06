@@ -1,6 +1,6 @@
-package com.github.matek2305.spring.dataloader.scanner.testdata.fail;
+package com.github.matek2305.dataloader.scanner.testdata.fail;
 
-import com.github.matek2305.spring.dataloader.DataLoader;
+import com.github.matek2305.dataloader.DataLoader;
 
 /**
  * @author Mateusz Urbański <matek2305@gmail.com>

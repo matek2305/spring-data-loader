@@ -1,7 +1,7 @@
-package com.github.matek2305.spring.dataloader.scanner;
+package com.github.matek2305.dataloader.scanner;
 
-import com.github.matek2305.spring.dataloader.DataLoader;
-import com.github.matek2305.spring.dataloader.exception.DefaultConstructorNotFoundException;
+import com.github.matek2305.dataloader.DataLoader;
+import com.github.matek2305.dataloader.exception.DefaultConstructorNotFoundException;
 import org.reflections.Reflections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

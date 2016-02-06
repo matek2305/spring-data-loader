@@ -1,4 +1,4 @@
-package com.github.matek2305.spring.dataloader;
+package com.github.matek2305.dataloader;
 
 /**
  * @author Mateusz Urbański <matek2305@gmail.com>
