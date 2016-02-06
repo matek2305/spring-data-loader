@@ -1,7 +1,6 @@
-package pl.murbanski.spring.dataloader;
+package pl.murbanski.spring.dataloader.annotations;
 
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import pl.murbanski.spring.dataloader.DataLoader;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,9 +10,9 @@ import java.lang.annotation.Target;
 /**
  * @author Mateusz Urbański <matek2305@gmail.com>
  */
-@Configuration
-@ComponentScan
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface EnableTestDataLoader {
+public @interface LoadDataAfter {
+
+    Class<? extends DataLoader>[] value();
 }

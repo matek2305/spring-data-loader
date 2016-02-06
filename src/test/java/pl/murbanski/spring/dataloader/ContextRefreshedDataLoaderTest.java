@@ -1,5 +1,7 @@
 package pl.murbanski.spring.dataloader;
 
+import pl.murbanski.spring.dataloader.annotations.LoadDataAfter;
+
 import java.util.Arrays;
 import java.util.List;
 

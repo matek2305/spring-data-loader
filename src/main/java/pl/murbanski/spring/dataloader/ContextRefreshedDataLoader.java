@@ -1,5 +1,6 @@
 package pl.murbanski.spring.dataloader;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationListener;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 /**
  * @author Mateusz Urbański <matek2305@gmail.com>
  */
+@Slf4j
 @Component
 public class ContextRefreshedDataLoader implements ApplicationListener<ContextRefreshedEvent> {
 
@@ -20,10 +22,10 @@ public class ContextRefreshedDataLoader implements ApplicationListener<ContextRe
     }
 
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        System.out.println("Starting test data load ...");
+        log.info("Starting test data load ...");
 
         // TODO: find loaders and execute in proper order
 
-        System.out.println("Test data loaded successfully");
+        log.info("Test data loaded successfully");
     }
 }
