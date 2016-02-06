@@ -1,4 +1,4 @@
-package pl.murbanski.spring.dataloader;
+package com.github.matek2305.spring.dataloader;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,9 +7,9 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import pl.murbanski.spring.dataloader.annotations.LoadDataAfter;
-import pl.murbanski.spring.dataloader.exception.DataDependencyCycleFoundException;
-import pl.murbanski.spring.dataloader.scanner.DataLoaderScanner;
+import com.github.matek2305.spring.dataloader.annotations.LoadDataAfter;
+import com.github.matek2305.spring.dataloader.exception.DataDependencyCycleFoundException;
+import com.github.matek2305.spring.dataloader.scanner.DataLoaderScanner;
 
 import java.util.HashMap;
 import java.util.HashSet;

@@ -1,4 +1,4 @@
-package pl.murbanski.spring.dataloader.exception;
+package com.github.matek2305.spring.dataloader.exception;
 
 /**
  * @author Mateusz Urbański <matek2305@gmail.com>

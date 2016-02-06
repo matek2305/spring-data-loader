@@ -1,8 +1,8 @@
-package pl.murbanski.spring.dataloader.config;
+package com.github.matek2305.spring.dataloader.config;
 
+import com.github.matek2305.spring.dataloader.ContextRefreshedDataLoader;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import pl.murbanski.spring.dataloader.ContextRefreshedDataLoader;
 
 /**
  * @author Mateusz Urbański <matek2305@gmail.com>

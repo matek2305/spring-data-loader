@@ -1,6 +1,6 @@
-package pl.murbanski.spring.dataloader.scanner.testdata.pass;
+package com.github.matek2305.spring.dataloader.scanner.testdata.pass;
 
-import pl.murbanski.spring.dataloader.DataLoader;
+import com.github.matek2305.spring.dataloader.DataLoader;
 
 /**
  * @author Mateusz Urbański <matek2305@gmail.com>

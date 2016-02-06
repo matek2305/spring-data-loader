@@ -1,10 +1,8 @@
-package pl.murbanski.spring.dataloader.scanner;
+package com.github.matek2305.spring.dataloader.scanner;
 
-import pl.murbanski.spring.dataloader.DataLoader;
+import com.github.matek2305.spring.dataloader.DataLoader;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Mateusz Urbański <matek2305@gmail.com>

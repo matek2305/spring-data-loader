@@ -1,6 +1,6 @@
-package pl.murbanski.spring.dataloader.annotations;
+package com.github.matek2305.spring.dataloader.annotations;
 
-import pl.murbanski.spring.dataloader.DataLoader;
+import com.github.matek2305.spring.dataloader.DataLoader;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

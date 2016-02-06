@@ -1,7 +1,7 @@
-package pl.murbanski.spring.dataloader.annotations;
+package com.github.matek2305.spring.dataloader.annotations;
 
+import com.github.matek2305.spring.dataloader.config.DataLoaderConfiguration;
 import org.springframework.context.annotation.Import;
-import pl.murbanski.spring.dataloader.config.DataLoaderConfiguration;
 
 import java.lang.annotation.*;
 

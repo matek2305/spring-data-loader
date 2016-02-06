@@ -1,12 +1,12 @@
-package pl.murbanski.spring.dataloader.scanner;
+package com.github.matek2305.spring.dataloader.scanner;
 
+import com.github.matek2305.spring.dataloader.DataLoader;
+import com.github.matek2305.spring.dataloader.exception.DefaultConstructorNotFoundException;
 import org.reflections.Reflections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.stereotype.Component;
-import pl.murbanski.spring.dataloader.DataLoader;
-import pl.murbanski.spring.dataloader.exception.DefaultConstructorNotFoundException;
 
 import java.util.Map;
 import java.util.Set;
