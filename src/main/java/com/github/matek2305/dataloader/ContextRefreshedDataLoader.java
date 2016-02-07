@@ -1,15 +1,13 @@
 package com.github.matek2305.dataloader;
 
+import com.github.matek2305.dataloader.annotations.LoadDataAfter;
+import com.github.matek2305.dataloader.exception.DataDependencyCycleFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-import com.github.matek2305.dataloader.annotations.LoadDataAfter;
-import com.github.matek2305.dataloader.exception.DataDependencyCycleFoundException;
-import com.github.matek2305.dataloader.scanner.DataLoaderScanner;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,67 +23,71 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Component
 public class ContextRefreshedDataLoader implements ApplicationListener<ContextRefreshedEvent> {
 
-    private final AutowireCapableBeanFactory autowireCapableBeanFactory;
-    private final DataLoaderScanner dataLoaderScanner;
+    private final ApplicationContext applicationContext;
+    private final Set<String> loadedBeans = new HashSet<>();
 
-    private final Set<Class<? extends DataLoader>> loaded = new HashSet<>();
-
-    private Map<Class<? extends DataLoader>, DataLoader> dataLoaderMap = new HashMap<>();
+    private Map<String, DataLoader> dataLoaderBeanMap = new HashMap<>();
 
     @Autowired
-    public ContextRefreshedDataLoader(
-            final AutowireCapableBeanFactory autowireCapableBeanFactory,
-            final DataLoaderScanner dataLoaderScanner) {
-        this.autowireCapableBeanFactory = autowireCapableBeanFactory;
-        this.dataLoaderScanner = dataLoaderScanner;
+    public ContextRefreshedDataLoader(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
 
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        final String dataLoaderPackage = dataLoaderScanner.getPackage();
-        if (StringUtils.isEmpty(dataLoaderPackage)) {
-            log.warn("No data loader package specified");
+        log.info("Scanning context for data loader beans ...");
+        dataLoaderBeanMap = applicationContext.getBeansOfType(DataLoader.class);
+        if (dataLoaderBeanMap.isEmpty()) {
+            log.info("No data loader beans found");
             return;
         }
 
-        log.info("Scanning package '{}' for data loaders ...", dataLoaderPackage);
-        dataLoaderMap = dataLoaderScanner.getInstanceMap();
-        log.info("Found {} loaders", dataLoaderMap.size());
-
-        log.info("Starting data load ...");
-        dataLoaderMap.forEach((clazz, loader) -> loadData(loader));
+        log.info("Found {} loaders, starting data load ...", dataLoaderBeanMap.size());
+        dataLoaderBeanMap.forEach((name, loaderBean) -> loadData(name));
         log.info("Data loaded successfully");
     }
 
-    private void loadData(DataLoader loader) {
-        loadData(loader, new HashSet<>());
+    private void loadData(String beanName) {
+        loadData(beanName, new HashSet<>());
     }
 
-    private void loadData(DataLoader dataLoader, Set<Class<? extends DataLoader>> dependencyChain) {
-        Class<? extends DataLoader> dataLoaderClass = dataLoader.getClass();
-        if (loaded.contains(dataLoaderClass)) {
+    private void loadData(String beanName, Set<String> dependencyChain) {
+        if (loadedBeans.contains(beanName)) {
             return;
         }
 
+        DataLoader dataLoader = checkNotNull(dataLoaderBeanMap.get(beanName), beanName + " bean not found!");
+        Class<? extends DataLoader> dataLoaderClass = dataLoader.getClass();
         if (dataLoaderClass.isAnnotationPresent(LoadDataAfter.class)) {
-            dependencyChain.add(dataLoaderClass);
+            dependencyChain.add(beanName);
 
             Class<? extends DataLoader>[] dependencies = dataLoaderClass.getAnnotation(LoadDataAfter.class).value();
             for (Class<? extends DataLoader> clazz : dependencies) {
-                if (loaded.contains(clazz)) {
+                final String dependencyBeanName = findBeanNameForClass(clazz);
+                if (loadedBeans.contains(dependencyBeanName)) {
                     continue;
                 }
 
-                if (dependencyChain.contains(clazz)) {
+                if (dependencyChain.contains(dependencyBeanName)) {
                     throw new DataDependencyCycleFoundException("Data dependency cycle found! Check your data loader classes.");
                 }
 
-                dependencyChain.add(clazz);
-                checkNotNull(dataLoaderMap.get(clazz), "%s instance not found", clazz.getSimpleName());
-                loadData(dataLoaderMap.get(clazz), dependencyChain);
+                dependencyChain.add(dependencyBeanName);
+                loadData(dependencyBeanName, dependencyChain);
             }
         }
 
         dataLoader.load();
-        loaded.add(dataLoaderClass);
+        loadedBeans.add(beanName);
+    }
+
+    private String findBeanNameForClass(Class<? extends DataLoader> clazz) {
+        String[] foundNames = applicationContext.getBeanNamesForType(clazz);
+        if (foundNames == null || foundNames.length == 0) {
+            throw new IllegalStateException("Bean for '" + clazz.getName() + "' class not found");
+        } else if (foundNames.length > 1) {
+            throw new IllegalStateException("Could not determine bean for '" + clazz.getName() + "' class");
+        } else {
+            return foundNames[0];
+        }
     }
 }

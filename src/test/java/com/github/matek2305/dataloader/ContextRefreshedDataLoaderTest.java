@@ -1,39 +1,33 @@
 package com.github.matek2305.dataloader;
 
 import com.github.matek2305.dataloader.annotations.LoadDataAfter;
-import com.github.matek2305.dataloader.scanner.DataLoaderScanner;
+import com.github.matek2305.dataloader.exception.DataDependencyCycleFoundException;
 import com.google.common.collect.ImmutableMap;
 import info.solidsoft.mockito.java8.api.WithBDDMockito;
 import org.assertj.core.api.WithAssertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
-import com.github.matek2305.dataloader.exception.DataDependencyCycleFoundException;
 
 /**
  * @author Mateusz Urbański <matek2305@gmail.com>
  */
 public class ContextRefreshedDataLoaderTest implements WithBDDMockito, WithAssertions {
 
-    private DataLoaderScanner dataLoaderScannerMock;
+    private ApplicationContext applicationContextMock;
     private ContextRefreshedDataLoader dataLoader;
 
     @Before
     public void setUp() throws Exception {
-        dataLoaderScannerMock = mock(DataLoaderScanner.class);
-        dataLoader = new ContextRefreshedDataLoader(mock(AutowireCapableBeanFactory.class), dataLoaderScannerMock);
-    }
+        applicationContextMock = mock(ApplicationContext.class);
+        dataLoader = new ContextRefreshedDataLoader(applicationContextMock);
 
-    @Test
-    public void shouldDoNothingWhenPackageIsEmpty() {
-        // given
-        given(dataLoaderScannerMock.getPackage()).willReturn(null);
-        // when
-        dataLoader.onApplicationEvent(mock(ContextRefreshedEvent.class));
-        // then
-        verify(dataLoaderScannerMock, never()).getInstanceMap();
+        given(applicationContextMock.getBeanNamesForType((Class<?>) any())).will(inv -> {
+            String simpleName = ((Class<?>) inv.getArguments()[0]).getSimpleName();
+            return new String[] {Character.toLowerCase(simpleName.charAt(0)) + simpleName.substring(1)};
+        });
     }
 
     @Test
@@ -44,12 +38,11 @@ public class ContextRefreshedDataLoaderTest implements WithBDDMockito, WithAsser
         final ThirdDataLoader thirdDataLoaderMock = mock(ThirdDataLoader.class);
         final AnotherDataLoader anotherDataLoaderMock = mock(AnotherDataLoader.class);
 
-        given(dataLoaderScannerMock.getPackage()).willReturn(this.getClass().getPackage().getName());
-        given(dataLoaderScannerMock.getInstanceMap()).willReturn(new ImmutableMap.Builder<Class<? extends DataLoader>, DataLoader>()
-                .put(FirstDataLoader.class, firstDataLoaderMock)
-                .put(SecondDataLoader.class, secondDataLoaderMock)
-                .put(ThirdDataLoader.class, thirdDataLoaderMock)
-                .put(AnotherDataLoader.class, anotherDataLoaderMock)
+        given(applicationContextMock.getBeansOfType(eq(DataLoader.class))).willReturn(new ImmutableMap.Builder<String, DataLoader>()
+                .put("firstDataLoader", firstDataLoaderMock)
+                .put("secondDataLoader", secondDataLoaderMock)
+                .put("thirdDataLoader", thirdDataLoaderMock)
+                .put("anotherDataLoader", anotherDataLoaderMock)
                 .build());
 
         InOrder inOrder = inOrder(thirdDataLoaderMock, firstDataLoaderMock, anotherDataLoaderMock, secondDataLoaderMock);
@@ -69,11 +62,10 @@ public class ContextRefreshedDataLoaderTest implements WithBDDMockito, WithAsser
         final OtherCycleDataLoader otherCycleDataLoader = mock(OtherCycleDataLoader.class);
         final YetAnotherCycleDataLoader yetAnotherCycleDataLoader = mock(YetAnotherCycleDataLoader.class);
 
-        given(dataLoaderScannerMock.getPackage()).willReturn(this.getClass().getPackage().getName());
-        given(dataLoaderScannerMock.getInstanceMap()).willReturn(new ImmutableMap.Builder<Class<? extends DataLoader>, DataLoader>()
-                .put(CycleDataLoader.class, cycleDataLoader)
-                .put(OtherCycleDataLoader.class, otherCycleDataLoader)
-                .put(YetAnotherCycleDataLoader.class, yetAnotherCycleDataLoader)
+        given(applicationContextMock.getBeansOfType(eq(DataLoader.class))).willReturn(new ImmutableMap.Builder<String, DataLoader>()
+                .put("cycleDataLoader", cycleDataLoader)
+                .put("otherCycleDataLoader", otherCycleDataLoader)
+                .put("yetAnotherCycleDataLoader", yetAnotherCycleDataLoader)
                 .build());
 
         // expect
@@ -83,35 +75,49 @@ public class ContextRefreshedDataLoaderTest implements WithBDDMockito, WithAsser
 
     @LoadDataAfter(ThirdDataLoader.class)
     private class FirstDataLoader implements DataLoader {
-        @Override public void load() {}
+        @Override
+        public void load() {
+        }
     }
 
     @LoadDataAfter({ThirdDataLoader.class, AnotherDataLoader.class})
     private class SecondDataLoader implements DataLoader {
-        @Override public void load() {}
+        @Override
+        public void load() {
+        }
     }
 
     private class ThirdDataLoader implements DataLoader {
-        @Override public void load() {}
+        @Override
+        public void load() {
+        }
     }
 
     private class AnotherDataLoader implements DataLoader {
-        @Override public void load() {}
+        @Override
+        public void load() {
+        }
     }
 
     @LoadDataAfter(OtherCycleDataLoader.class)
     private class CycleDataLoader implements DataLoader {
-        @Override public void load() {}
+        @Override
+        public void load() {
+        }
     }
 
     @LoadDataAfter(YetAnotherCycleDataLoader.class)
     private class OtherCycleDataLoader implements DataLoader {
-        @Override public void load() {}
+        @Override
+        public void load() {
+        }
     }
 
     @LoadDataAfter(CycleDataLoader.class)
     private class YetAnotherCycleDataLoader implements DataLoader {
-        @Override public void load() {}
+        @Override
+        public void load() {
+        }
     }
 
 }
