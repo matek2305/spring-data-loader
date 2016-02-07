@@ -2,6 +2,8 @@ package com.github.matek2305.dataloader;
 
 import com.github.matek2305.dataloader.annotations.LoadDataAfter;
 import com.github.matek2305.dataloader.exception.DataDependencyCycleFoundException;
+import com.github.matek2305.dataloader.exception.DataLoaderBeanNotFoundException;
+import com.github.matek2305.dataloader.exception.UnambiguousDataLoaderBeanException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -83,9 +85,9 @@ public class ContextRefreshedDataLoader implements ApplicationListener<ContextRe
     private String findBeanNameForClass(Class<? extends DataLoader> clazz) {
         String[] foundNames = applicationContext.getBeanNamesForType(clazz);
         if (foundNames == null || foundNames.length == 0) {
-            throw new IllegalStateException("Bean for '" + clazz.getName() + "' class not found");
+            throw new DataLoaderBeanNotFoundException("Bean for '" + clazz.getName() + "' class not found");
         } else if (foundNames.length > 1) {
-            throw new IllegalStateException("Could not determine bean for '" + clazz.getName() + "' class");
+            throw new UnambiguousDataLoaderBeanException("Could not determine bean for '" + clazz.getName() + "' class");
         } else {
             return foundNames[0];
         }

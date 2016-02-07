@@ -2,7 +2,10 @@ package com.github.matek2305.dataloader;
 
 import com.github.matek2305.dataloader.annotations.LoadDataAfter;
 import com.github.matek2305.dataloader.exception.DataDependencyCycleFoundException;
+import com.github.matek2305.dataloader.exception.DataLoaderBeanNotFoundException;
+import com.github.matek2305.dataloader.exception.UnambiguousDataLoaderBeanException;
 import com.google.common.collect.ImmutableMap;
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import info.solidsoft.mockito.java8.api.WithBDDMockito;
 import org.assertj.core.api.WithAssertions;
 import org.junit.Before;
@@ -10,6 +13,8 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
+
+import java.util.Collections;
 
 /**
  * @author Mateusz Urbański <matek2305@gmail.com>
@@ -23,11 +28,48 @@ public class ContextRefreshedDataLoaderTest implements WithBDDMockito, WithAsser
     public void setUp() throws Exception {
         applicationContextMock = mock(ApplicationContext.class);
         dataLoader = new ContextRefreshedDataLoader(applicationContextMock);
+    }
 
-        given(applicationContextMock.getBeanNamesForType((Class<?>) any())).will(inv -> {
-            String simpleName = ((Class<?>) inv.getArguments()[0]).getSimpleName();
-            return new String[] {Character.toLowerCase(simpleName.charAt(0)) + simpleName.substring(1)};
-        });
+    @Test
+    public void shouldDoNothingWhenDataLoaderBeanNotFound() {
+        // given
+        given(applicationContextMock.getBeansOfType(eq(DataLoader.class))).willReturn(Collections.emptyMap());
+
+        // when
+        dataLoader.onApplicationEvent(mock(ContextRefreshedEvent.class));
+
+        // then
+        verify(applicationContextMock).getBeansOfType(eq(DataLoader.class));
+        verifyNoMoreInteractions(applicationContextMock);
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenDependencyBeanNotFound() {
+        // given
+        given(applicationContextMock.getBeansOfType(eq(DataLoader.class))).willReturn(new ImmutableMap.Builder<String, DataLoader>()
+                .put("firstDataLoader",  mock(FirstDataLoader.class))
+                .build());
+
+        // expect
+        assertThatThrownBy(() -> dataLoader.onApplicationEvent(mock(ContextRefreshedEvent.class)))
+                .isExactlyInstanceOf(DataLoaderBeanNotFoundException.class)
+                .hasMessageContaining(ThirdDataLoader.class.getName());
+
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenUnambiguousBeanDefinitionFound() {
+        // given
+        given(applicationContextMock.getBeansOfType(eq(DataLoader.class))).willReturn(new ImmutableMap.Builder<String, DataLoader>()
+                .put("firstDataLoader",  mock(FirstDataLoader.class))
+                .build());
+
+        given(applicationContextMock.getBeanNamesForType((Class<?>) any())).willReturn(new String[] { "a", "b" });
+
+        // expect
+        assertThatThrownBy(() -> dataLoader.onApplicationEvent(mock(ContextRefreshedEvent.class)))
+                .isExactlyInstanceOf(UnambiguousDataLoaderBeanException.class)
+                .hasMessageContaining(ThirdDataLoader.class.getName());
     }
 
     @Test
@@ -45,9 +87,16 @@ public class ContextRefreshedDataLoaderTest implements WithBDDMockito, WithAsser
                 .put("anotherDataLoader", anotherDataLoaderMock)
                 .build());
 
+        given(applicationContextMock.getBeanNamesForType((Class<?>) any())).will(inv -> {
+            String simpleName = ((Class<?>) inv.getArguments()[0]).getSimpleName();
+            return new String[] {Character.toLowerCase(simpleName.charAt(0)) + simpleName.substring(1)};
+        });
+
         InOrder inOrder = inOrder(thirdDataLoaderMock, firstDataLoaderMock, anotherDataLoaderMock, secondDataLoaderMock);
+
         // when
         dataLoader.onApplicationEvent(mock(ContextRefreshedEvent.class));
+
         // then
         inOrder.verify(thirdDataLoaderMock).load();
         inOrder.verify(firstDataLoaderMock).load();
@@ -58,15 +107,16 @@ public class ContextRefreshedDataLoaderTest implements WithBDDMockito, WithAsser
     @Test
     public void shouldThrowExceptionWhenDependencyCycleOccurs() throws Exception {
         // given
-        final CycleDataLoader cycleDataLoader = mock(CycleDataLoader.class);
-        final OtherCycleDataLoader otherCycleDataLoader = mock(OtherCycleDataLoader.class);
-        final YetAnotherCycleDataLoader yetAnotherCycleDataLoader = mock(YetAnotherCycleDataLoader.class);
-
         given(applicationContextMock.getBeansOfType(eq(DataLoader.class))).willReturn(new ImmutableMap.Builder<String, DataLoader>()
-                .put("cycleDataLoader", cycleDataLoader)
-                .put("otherCycleDataLoader", otherCycleDataLoader)
-                .put("yetAnotherCycleDataLoader", yetAnotherCycleDataLoader)
+                .put("cycleDataLoader", mock(CycleDataLoader.class))
+                .put("otherCycleDataLoader", mock(OtherCycleDataLoader.class))
+                .put("yetAnotherCycleDataLoader", mock(YetAnotherCycleDataLoader.class))
                 .build());
+
+        given(applicationContextMock.getBeanNamesForType((Class<?>) any())).will(inv -> {
+            String simpleName = ((Class<?>) inv.getArguments()[0]).getSimpleName();
+            return new String[] {Character.toLowerCase(simpleName.charAt(0)) + simpleName.substring(1)};
+        });
 
         // expect
         assertThatThrownBy(() -> dataLoader.onApplicationEvent(mock(ContextRefreshedEvent.class)))
