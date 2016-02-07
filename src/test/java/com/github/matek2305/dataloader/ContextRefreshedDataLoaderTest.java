@@ -5,7 +5,6 @@ import com.github.matek2305.dataloader.exception.DataDependencyCycleFoundExcepti
 import com.github.matek2305.dataloader.exception.DataLoaderBeanNotFoundException;
 import com.github.matek2305.dataloader.exception.UnambiguousDataLoaderBeanException;
 import com.google.common.collect.ImmutableMap;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import info.solidsoft.mockito.java8.api.WithBDDMockito;
 import org.assertj.core.api.WithAssertions;
 import org.junit.Before;
