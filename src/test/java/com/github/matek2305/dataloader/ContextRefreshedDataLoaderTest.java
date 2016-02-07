@@ -1,6 +1,5 @@
 package com.github.matek2305.dataloader;
 
-import com.github.matek2305.dataloader.annotations.LoadDataAfter;
 import com.github.matek2305.dataloader.exception.DataDependencyCycleFoundException;
 import com.github.matek2305.dataloader.exception.DataLoaderBeanNotFoundException;
 import com.github.matek2305.dataloader.exception.UnambiguousDataLoaderBeanException;
@@ -15,7 +14,10 @@ import org.springframework.context.event.ContextRefreshedEvent;
 
 import java.util.Collections;
 
+import static com.github.matek2305.dataloader.TestDataLoaders.*;
+
 /**
+ * {@link ContextRefreshedDataLoader} test cases.
  * @author Mateusz Urbański <matek2305@gmail.com>
  */
 public class ContextRefreshedDataLoaderTest implements WithBDDMockito, WithAssertions {
@@ -52,7 +54,7 @@ public class ContextRefreshedDataLoaderTest implements WithBDDMockito, WithAsser
         // expect
         assertThatThrownBy(() -> dataLoader.onApplicationEvent(mock(ContextRefreshedEvent.class)))
                 .isExactlyInstanceOf(DataLoaderBeanNotFoundException.class)
-                .hasMessageContaining(ThirdDataLoader.class.getName());
+                .hasMessageContaining(FourthDataLoader.class.getName());
 
     }
 
@@ -68,21 +70,23 @@ public class ContextRefreshedDataLoaderTest implements WithBDDMockito, WithAsser
         // expect
         assertThatThrownBy(() -> dataLoader.onApplicationEvent(mock(ContextRefreshedEvent.class)))
                 .isExactlyInstanceOf(UnambiguousDataLoaderBeanException.class)
-                .hasMessageContaining(ThirdDataLoader.class.getName());
+                .hasMessageContaining(FourthDataLoader.class.getName());
     }
 
     @Test
     public void shouldCallAllLoadersInProperOrder() {
         // given
-        final FirstDataLoader firstDataLoaderMock = mock(FirstDataLoader.class);
-        final SecondDataLoader secondDataLoaderMock = mock(SecondDataLoader.class);
-        final ThirdDataLoader thirdDataLoaderMock = mock(ThirdDataLoader.class);
-        final AnotherDataLoader anotherDataLoaderMock = mock(AnotherDataLoader.class);
+        final DataLoader firstDataLoaderMock = mock(FirstDataLoader.class);
+        final DataLoader secondDataLoaderMock = mock(SecondDataLoader.class);
+        final DataLoader thirdDataLoaderMock = mock(ThirdDataLoader.class);
+        final DataLoader fourthDataLoaderMock = mock(FourthDataLoader.class);
+        final DataLoader anotherDataLoaderMock = mock(AnotherDataLoader.class);
 
         given(applicationContextMock.getBeansOfType(eq(DataLoader.class))).willReturn(new ImmutableMap.Builder<String, DataLoader>()
                 .put("firstDataLoader", firstDataLoaderMock)
                 .put("secondDataLoader", secondDataLoaderMock)
                 .put("thirdDataLoader", thirdDataLoaderMock)
+                .put("fourthDataLoader", fourthDataLoaderMock)
                 .put("anotherDataLoader", anotherDataLoaderMock)
                 .build());
 
@@ -91,15 +95,16 @@ public class ContextRefreshedDataLoaderTest implements WithBDDMockito, WithAsser
             return new String[] {Character.toLowerCase(simpleName.charAt(0)) + simpleName.substring(1)};
         });
 
-        InOrder inOrder = inOrder(thirdDataLoaderMock, firstDataLoaderMock, anotherDataLoaderMock, secondDataLoaderMock);
+        InOrder inOrder = inOrder(anotherDataLoaderMock, fourthDataLoaderMock, firstDataLoaderMock, thirdDataLoaderMock, secondDataLoaderMock);
 
         // when
         dataLoader.onApplicationEvent(mock(ContextRefreshedEvent.class));
 
         // then
-        inOrder.verify(thirdDataLoaderMock).load();
-        inOrder.verify(firstDataLoaderMock).load();
         inOrder.verify(anotherDataLoaderMock).load();
+        inOrder.verify(fourthDataLoaderMock).load();
+        inOrder.verify(firstDataLoaderMock).load();
+        inOrder.verify(thirdDataLoaderMock).load();
         inOrder.verify(secondDataLoaderMock).load();
     }
 
@@ -107,6 +112,10 @@ public class ContextRefreshedDataLoaderTest implements WithBDDMockito, WithAsser
     public void shouldThrowExceptionWhenDependencyCycleOccurs() throws Exception {
         // given
         given(applicationContextMock.getBeansOfType(eq(DataLoader.class))).willReturn(new ImmutableMap.Builder<String, DataLoader>()
+                .put("theBestTestDataLoader", mock(TheBestTestDataLoader.class))
+                .put("secondDataLoader", mock(SecondDataLoader.class))
+                .put("thirdDataLoader", mock(ThirdDataLoader.class))
+                .put("anotherDataLoader", mock(AnotherDataLoader.class))
                 .put("cycleDataLoader", mock(CycleDataLoader.class))
                 .put("otherCycleDataLoader", mock(OtherCycleDataLoader.class))
                 .put("yetAnotherCycleDataLoader", mock(YetAnotherCycleDataLoader.class))
@@ -120,53 +129,6 @@ public class ContextRefreshedDataLoaderTest implements WithBDDMockito, WithAsser
         // expect
         assertThatThrownBy(() -> dataLoader.onApplicationEvent(mock(ContextRefreshedEvent.class)))
                 .isExactlyInstanceOf(DataDependencyCycleFoundException.class);
-    }
-
-    @LoadDataAfter(ThirdDataLoader.class)
-    private class FirstDataLoader implements DataLoader {
-        @Override
-        public void load() {
-        }
-    }
-
-    @LoadDataAfter({ThirdDataLoader.class, AnotherDataLoader.class})
-    private class SecondDataLoader implements DataLoader {
-        @Override
-        public void load() {
-        }
-    }
-
-    private class ThirdDataLoader implements DataLoader {
-        @Override
-        public void load() {
-        }
-    }
-
-    private class AnotherDataLoader implements DataLoader {
-        @Override
-        public void load() {
-        }
-    }
-
-    @LoadDataAfter(OtherCycleDataLoader.class)
-    private class CycleDataLoader implements DataLoader {
-        @Override
-        public void load() {
-        }
-    }
-
-    @LoadDataAfter(YetAnotherCycleDataLoader.class)
-    private class OtherCycleDataLoader implements DataLoader {
-        @Override
-        public void load() {
-        }
-    }
-
-    @LoadDataAfter(CycleDataLoader.class)
-    private class YetAnotherCycleDataLoader implements DataLoader {
-        @Override
-        public void load() {
-        }
     }
 
 }

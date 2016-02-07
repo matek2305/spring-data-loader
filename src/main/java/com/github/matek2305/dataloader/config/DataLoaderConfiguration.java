@@ -5,6 +5,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 /**
+ * Configuration for data loader bean.
+ * @see ContextRefreshedDataLoader
  * @author Mateusz Urbański <matek2305@gmail.com>
  */
 @Configuration

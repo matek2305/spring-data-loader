@@ -8,11 +8,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Dependency marker for data loader.
  * @author Mateusz Urbański <matek2305@gmail.com>
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface LoadDataAfter {
 
+    /**
+     * Dependent data loaders.
+     * @return dependency loaders classes
+     */
     Class<? extends DataLoader>[] value();
 }
