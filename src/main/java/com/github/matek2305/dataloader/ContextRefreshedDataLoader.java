@@ -19,6 +19,9 @@ import java.util.Set;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
+ * Component executing found data loader beans on {@link ContextRefreshedEvent}.
+ * @see ApplicationListener
+ * @see ContextRefreshedEvent
  * @author Mateusz Urbański <matek2305@gmail.com>
  */
 @Slf4j
