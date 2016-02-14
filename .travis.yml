@@ -1,4 +1,5 @@
 language: java
 jdk: oraclejdk8
 install: mvn clean install
-after_success: mvn jacoco:report coveralls:report
+before_install: pip install --user codecov
+after_success: codecov
