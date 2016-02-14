@@ -54,7 +54,7 @@ public class RoleDataLoader implements DataLoader {
 
 ### Example
 
-You can check example of usage spring-data-loader [here](https://github.com/matek2305/pt-app).
+You can check usage example of spring-data-loader [here](https://github.com/matek2305/pt-app).
 
 ### Contribute
 
