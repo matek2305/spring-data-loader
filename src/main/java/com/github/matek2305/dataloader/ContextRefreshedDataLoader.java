@@ -31,7 +31,7 @@ public class ContextRefreshedDataLoader implements ApplicationListener<ContextRe
     private final ApplicationContext applicationContext;
     private final Set<String> loadedBeans = new HashSet<>();
 
-    private Map<String, DataLoader> dataLoaderBeanMap = new HashMap<>();
+    private Map<String, DataLoader> dataLoaderBeanMap;
 
     @Autowired
     public ContextRefreshedDataLoader(ApplicationContext applicationContext) {
