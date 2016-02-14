@@ -52,6 +52,10 @@ public class RoleDataLoader implements DataLoader {
 }
 ```
 
+### Example
+
+You can check example of usage spring-data-loader [here](https://github.com/matek2305/pt-app).
+
 ### Contribute
 
 This is my first public utility library and I would be grateful for your improvement ideas, so feel free to open an [issue](https://github.com/matek2305/spring-data-loader/issues) or contribute.
