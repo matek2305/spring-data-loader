@@ -16,8 +16,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * Component executing found data loader beans on {@link ContextRefreshedEvent}.
  * @see ApplicationListener
@@ -60,7 +58,9 @@ public class ContextRefreshedDataLoader implements ApplicationListener<ContextRe
             return;
         }
 
-        DataLoader dataLoader = checkNotNull(dataLoaderBeanMap.get(beanName), beanName + " bean not found!");
+        DataLoader dataLoader = dataLoaderBeanMap.get(beanName);
+        assert dataLoader != null;
+
         Class<? extends DataLoader> dataLoaderClass = dataLoader.getClass();
         if (dataLoaderClass.isAnnotationPresent(LoadDataAfter.class)) {
             dependencyChain.add(beanName);
