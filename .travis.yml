@@ -2,4 +2,6 @@ language: java
 jdk: oraclejdk8
 install: mvn clean install
 before_install: pip install --user codecov
-after_success: codecov
+after_success: 
+  - codecov
+  - python <(curl -s https://raw.githubusercontent.com/TouK/sputnik-ci/master/sputnik-ci.py)
